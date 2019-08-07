@@ -169,7 +169,7 @@
                                                             <rect key="frame" x="10" y="304" width="325" height="40"/>
                                                             <subviews>
                                                                 <stackView opaque="NO" contentMode="scaleToFill" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="FZC-n9-Cl0">
-                                                                    <rect key="frame" x="10" y="5" width="270" height="30"/>
+                                                                    <rect key="frame" x="10" y="5" width="180" height="30"/>
                                                                     <subviews>
                                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screen Shot 2018-09-14 at 12.08.52 PM" translatesAutoresizingMaskIntoConstraints="NO" id="eAq-Xu-eDk" customClass="CircleImage" customModule="Tourney" customModuleProvider="target">
                                                                             <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -179,7 +179,7 @@
                                                                             </constraints>
                                                                         </imageView>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Tlorenz" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HYz-yl-EQu">
-                                                                            <rect key="frame" x="33" y="0.0" width="237" height="30"/>
+                                                                            <rect key="frame" x="33" y="0.0" width="147" height="30"/>
                                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
@@ -213,7 +213,7 @@
                                                                 <constraint firstAttribute="trailing" secondItem="BAV-f9-9yb" secondAttribute="trailing" constant="10" id="27x-Sz-aJ6"/>
                                                                 <constraint firstItem="FZC-n9-Cl0" firstAttribute="leading" secondItem="2cO-Lr-Kk0" secondAttribute="leading" constant="10" id="8Ia-5M-HcF"/>
                                                                 <constraint firstItem="BAV-f9-9yb" firstAttribute="centerY" secondItem="2cO-Lr-Kk0" secondAttribute="centerY" id="Bci-aa-Ja7"/>
-                                                                <constraint firstItem="BAV-f9-9yb" firstAttribute="leading" secondItem="FZC-n9-Cl0" secondAttribute="trailing" constant="10" id="b60-dv-I89"/>
+                                                                <constraint firstItem="BAV-f9-9yb" firstAttribute="leading" secondItem="FZC-n9-Cl0" secondAttribute="trailing" constant="100" id="b60-dv-I89"/>
                                                                 <constraint firstAttribute="height" constant="40" id="hpG-ZO-ffX"/>
                                                                 <constraint firstItem="FZC-n9-Cl0" firstAttribute="centerY" secondItem="2cO-Lr-Kk0" secondAttribute="centerY" id="st2-Ld-GeO"/>
                                                             </constraints>

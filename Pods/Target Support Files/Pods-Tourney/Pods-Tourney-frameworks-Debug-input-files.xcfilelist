@@ -1,5 +1,6 @@
 ${PODS_ROOT}/Target Support Files/Pods-Tourney/Pods-Tourney-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/ABVideoRangeSlider/ABVideoRangeSlider.framework
+${BUILT_PRODUCTS_DIR}/Cache/Cache.framework
 ${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework
 ${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework
 ${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework

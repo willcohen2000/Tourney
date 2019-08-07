@@ -94,7 +94,7 @@ class UserVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
         
         storageReference.putData(imageData!, metadata: nil, completion: { (metaData, error) in
             if (error != nil) {
-                print("@willcohen see this message")
+                print("@willcohen see this message: \(error?.localizedDescription)")
                 completionHandler(false)
             } else {
                 print("@willcohen this must have worked ")

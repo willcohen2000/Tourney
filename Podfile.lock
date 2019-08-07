@@ -1,5 +1,6 @@
 PODS:
   - ABVideoRangeSlider (0.1.5)
+  - Cache (5.2.0)
   - Firebase/Auth (4.8.0):
     - Firebase/Core
     - FirebaseAuth (= 4.4.1)
@@ -55,6 +56,7 @@ PODS:
 
 DEPENDENCIES:
   - ABVideoRangeSlider
+  - Cache
   - Firebase/Auth (= 4.8.0)
   - Firebase/Core (= 4.8)
   - Firebase/Database (= 4.8.0)
@@ -65,6 +67,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - ABVideoRangeSlider
+    - Cache
     - Firebase
     - FirebaseAnalytics
     - FirebaseAuth
@@ -81,6 +84,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   ABVideoRangeSlider: f2b6d894170bd0951693de4c1ad625f7f9f8b6a5
+  Cache: 807c5d86d01a177f06ede9865add3aea269bbfd4
   Firebase: 710decbbc6d9d48530e9a5dba3209740c3532e05
   FirebaseAnalytics: 5b02a63ead2c3f0259cfc7f15e053e440587ecf8
   FirebaseAuth: dc0dd403beca5b2b016aac89c2d0b8dad1c81926
@@ -95,6 +99,6 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   SwiftKeychainWrapper: 6fc49fbf7d4a6b0772917acb0e53a1639f6078d6
 
-PODFILE CHECKSUM: 703dd2af1c532b01dc839a6ef0c8e4c9f0eea010
+PODFILE CHECKSUM: aaf104db4caeadd16f23badcba934df4e9c548d4
 
 COCOAPODS: 1.7.5

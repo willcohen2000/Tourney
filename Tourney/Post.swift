@@ -10,8 +10,10 @@ import Foundation
 
 import FirebaseAnalytics
 import FirebaseDatabase
+import AVKit
 
 class Post  {
+    
     private var _username: String!
     private var _userImg: String!
     private var _postImg: String!
@@ -20,7 +22,15 @@ class Post  {
     private var _videoLink: String!
     private var _postRef: DatabaseReference!
     
-    
+    private var _downloadedAsset: AVAsset!
+
+    var downloadedAsset: AVAsset {
+        get {
+            return _downloadedAsset
+        } set{
+            _downloadedAsset = newValue
+        }
+    }
     var username: String {
         return _username
     }
@@ -43,6 +53,15 @@ class Post  {
     var postKey: String {
         return _postKey
     }
+    
+   /* var downloadedURL: URL {
+        get {
+            return _downloadedURL
+        } set{
+            _downloadedURL = newValue
+        }
+    }*/
+    
     init(imgUrl: String, views: Int, username: String, userImg: String, videoLink: String) {
         _views = views
         _postImg = imgUrl

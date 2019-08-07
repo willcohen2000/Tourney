@@ -36,7 +36,7 @@ class PostCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        avPlayerLayer.frame = postVideo.layer.bounds
+        self.avPlayerLayer.frame = self.postVideo.layer.bounds
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -46,11 +46,17 @@ class PostCell: UITableViewCell {
     }
     
     func isUnactive() {
-        player.pause();
+        if let player = player {
+            player.pause();
+        }
+        
     }
     
     func isActive() {
-        player.play();
+        if let player = player {
+            player.play();
+        }
+        
         if (!viewed) {
             updateViewsInDatabase(like: true)
             viewed = true
@@ -58,14 +64,22 @@ class PostCell: UITableViewCell {
         
     }
     
-    func configCell(post: Post, img: UIImage? = nil, userImg: UIImage? = nil){
-        //let playerItem = CachingPlayerItem(url: URL(string: link)!)
-       // player = AVPlayer(playerItem: playerItem)
-        player = AVPlayer(url: URL(string: post.videoLink)!)
-        avPlayerLayer = AVPlayerLayer(player: player)
-        avPlayerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        player.automaticallyWaitsToMinimizeStalling = false
-        postVideo.layer.addSublayer(avPlayerLayer)
+    func configCell(post: Post, img: UIImage? = nil, userImg: UIImage? = nil) {
+       // let playerItem = CachingPlayerItem(url: URL(string: post.videoLink)!)
+        //player = AVPlayer(playerItem: playerItem)
+        //print("xxxx: \(post.videoAsset.duration.seconds)")
+        //let videoURL = "file:///Users/willcohen/Library/Developer/CoreSimulator/Devices/10FE9929-E5D9-4410-B907-372A659CDFD0/data/Containers/Data/Application/DEC0896A-9F58-437D-9F43-D5545C2CE45A/Library/Caches/nnxCgXhXPkwJ0W8U"
+        //let item = AVPlayerItem(asset: AVAsset(url: post.downloadedURL))
+        
+        print("lets see it: \(post.downloadedAsset.duration.seconds)")
+        
+        self.player = AVPlayer(playerItem: AVPlayerItem(asset: post.downloadedAsset))
+        self.avPlayerLayer = AVPlayerLayer(player: self.player)
+        self.avPlayerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        self.player.automaticallyWaitsToMinimizeStalling = false
+        self.postVideo.layer.addSublayer(self.avPlayerLayer)
+        self.player.play()
+
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: .main) { [weak self] _ in
             self?.player?.seek(to: CMTime.zero)
@@ -141,6 +155,12 @@ class PostCell: UITableViewCell {
         let views = likesLbl.text!
         likesLbl.text = "\((Int(views)! + 1))"
     }
+    
+    @IBAction func buttonPressed(_ sender: Any) {
+        print("button")
+        
+    }
+    
     
    /* @IBAction func liked(_ sender: AnyObject ){
         let likeRef = Database.database().reference().child("likes").child(currentUser!).child(post.postKey)

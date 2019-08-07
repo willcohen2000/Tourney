@@ -10,6 +10,9 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 import SwiftKeychainWrapper
+import AVKit
+import CoreData
+import Cache
 
 class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -39,6 +42,8 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     var userImage: String!
     var userName: String!
     
+    var didCycle: Bool = false
+    
     var currentCell: PostCell!
     var cells: [PostCell] = [];
     
@@ -46,7 +51,7 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     var queried: [Post] = []
     
     override func viewDidAppear(_ animated: Bool) {
-        loadDataAndResetTable()
+        //loadDataAndResetTable()
         if let currentCell = currentCell {
             currentCell.isActive();
         }
@@ -74,7 +79,7 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("HELLLD")
         tableView.delegate = self
         tableView.dataSource = self
         imagePicker = UIImagePickerController()
@@ -93,7 +98,7 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
         //change when eventID changes ====================================================
         let eventID = "pennstate"
         let query = ref.queryOrdered(byChild: "eventID").queryEqual(toValue: eventID)
-        query.observe(.value, with: { (snapshot) in
+        query.observeSingleEvent(of: .value, with: { (snapshot) in
             if let childSnapshot = snapshot.children.allObjects as? [DataSnapshot] {
                 queriedPosts.removeAll()
                 for data in childSnapshot {
@@ -152,22 +157,55 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     }
     
     func loadDataAndResetTable() {
-        Database.database().reference().child("posts").observe(.value, with: {
-            (snapshot) in
-            if let snapshot = snapshot.children.allObjects as? [DataSnapshot]{
-                self.posts.removeAll()
-                for data in snapshot{
-                    print(data)
-                    if let postDict = data.value as? Dictionary<String, AnyObject>{
-                        let key = data.key
-                        let post = Post(postKey: key, postData: postDict)
-                        self.posts.append(post)
+        if (!didCycle) {
+            Database.database().reference().child("posts").observeSingleEvent(of: .value, with: {
+                (snapshot) in
+                if let snapshot = snapshot.children.allObjects as? [DataSnapshot]{
+                    self.posts.removeAll()
+                    for data in snapshot{
+                        print(data)
+                        if let postDict = data.value as? Dictionary<String, AnyObject> {
+                            let key = data.key
+                            let post = Post(postKey: key, postData: postDict)
+                            
+                            let fileManager = FileManager.default
+                            do {
+                                let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
+                                let fileURL = documentDirectory.appendingPathComponent("\(key).mov")
+                                let filePath = fileURL.path
+                                let fileManager = FileManager.default
+                                if fileManager.fileExists(atPath: filePath) {
+                                    print("here")
+                                    post.downloadedAsset = AVAsset(url: fileURL)
+                                    self.posts.append(post)
+                                    self.tableView.reloadData()
+                                } else {
+                                    print("there")
+                                    let urlData = NSData(contentsOf: URL(string: post.videoLink)!)
+                                    urlData!.write(to: fileURL, atomically: true)
+                                    post.downloadedAsset = AVAsset(url: fileURL)
+                                    self.posts.append(post)
+                                    self.tableView.reloadData()
+                                }
+                                //try imageData.write(to: fileURL)
+                            } catch {
+                                print(error)
+                            }
+                            
+                            //let homeDirectory = NSURL.fileURL(withPath: NSDocumen, isDirectory: true)
+                            
+                            //print("file: \(fileURL)")
+                          //  let filePath = fileURL.path
+                           // let fileManager = FileManager.default
+                            
+                            
+                        }
                     }
+                    
                 }
-                
-            }
-            self.tableView.reloadData()
-        })
+                self.didCycle = true;
+            })
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -181,17 +219,29 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
         return posts.count
     }
     
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let activeCell = cell as! PostCell;
-        activeCell.isUnactive();
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        print("hello!")
-        let activeCell = cell as! PostCell;
-        currentCell = activeCell;
-        currentCell.player.play()
-        activeCell.isActive();
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var mostVisiblePercentage: CGFloat = 0.0
+        var mostVisibleCell: PostCell!
+        for item in tableView.indexPathsForVisibleRows! {
+            let cellRect = tableView.rectForRow(at: item)
+            if let superview = tableView.superview {
+                let convertedRect = tableView.convert(cellRect, to:superview)
+                let intersect = tableView.frame.intersection(convertedRect)
+                let visibleHeight = intersect.height
+                let cellHeight = cellRect.height
+                let ratio = visibleHeight / cellHeight
+                if (ratio > mostVisiblePercentage) {
+                    if let priorCell = mostVisibleCell {
+                        priorCell.isUnactive()
+                    }
+                    mostVisiblePercentage = ratio
+                    mostVisibleCell = (tableView.cellForRow(at: item) as! PostCell)
+                } else {
+                    (tableView.cellForRow(at: item) as! PostCell).isUnactive()
+                }
+            }
+        }
+        mostVisibleCell.isActive()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -199,8 +249,14 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
         let post = posts[indexPath.row]
         if let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell") as? PostCell {
             cell.configCell(post: post)
-            cell.isActive()
-            cells.append(cell)
+            if (!cells.contains(cell)) {
+                cells.append(cell)
+            }
+            if (indexPath.row == 0) {
+                cell.isActive()
+            } else {
+                cell.isUnactive()
+            }
             return cell
         } else {
             return PostCell()
@@ -210,8 +266,6 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
         if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage{
             selectedImage = image
             imageSelected = true
-            
-            
         } else {
             print("a valid image wasn't selected")
         }

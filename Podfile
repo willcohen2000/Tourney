@@ -12,8 +12,9 @@ target 'Tourney' do
 	pod 'Firebase/Database', '4.8.0'
 	pod 'Firebase/Storage', '4.8.0'
 	pod 'ABVideoRangeSlider'
-  	pod 'Kingfisher'
-  	pod 'SwiftKeychainWrapper'
+  pod 'Kingfisher'
+  pod 'SwiftKeychainWrapper'
+  pod 'Cache'
 	
   target 'TourneyTests' do
     inherit! :search_paths
