@@ -920,15 +920,15 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Aw-m7-R4t">
-                                        <rect key="frame" x="27" y="8" width="32" height="32"/>
+                                        <rect key="frame" x="27" y="8" width="50" height="32"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="32" id="4Vr-Jv-UfO"/>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="32" id="62c-3d-tGQ"/>
                                             <constraint firstAttribute="height" constant="32" id="EuU-bj-FAm"/>
-                                            <constraint firstAttribute="width" constant="32" id="o1a-GW-10a"/>
+                                            <constraint firstAttribute="width" constant="50" id="o1a-GW-10a"/>
                                         </constraints>
-                                        <state key="normal" image="baseline_person_black_48pt_3x"/>
+                                        <state key="normal" title="Back"/>
                                         <connections>
+                                            <action selector="backButtonPressed:" destination="GFG-Mj-yKl" eventType="touchUpInside" id="9Dy-Di-cB7"/>
                                             <segue destination="ybS-Mo-hKh" kind="unwind" unwindAction="unwindToVC1WithSegue:" id="G7C-4E-Lnh"/>
                                         </connections>
                                     </button>
@@ -967,6 +967,10 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="e80-M2-nbu"/>
                     </view>
+                    <connections>
+                        <outlet property="userNameTextField" destination="fFD-tv-Wyn" id="diU-V8-mpD"/>
+                        <outlet property="userProfileImageView" destination="uQ4-2d-wEU" id="6ZK-rj-2Tn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Avr-nX-Jks" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="ybS-Mo-hKh" userLabel="Exit" sceneMemberID="exit"/>
@@ -1075,7 +1079,7 @@
         <image name="baseline_settings_black_48pt_3x" width="144" height="144"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Tad-LV-3QN"/>
+        <segue reference="HrG-86-VWO"/>
         <segue reference="cIv-nT-Xdz"/>
         <segue reference="wfu-Ls-UB2"/>
         <segue reference="1Ex-2H-U6N"/>

@@ -153,6 +153,7 @@ class RecordVideo: UIViewController, AVCaptureFileOutputRecordingDelegate {
             if let destination = segue.destination as? UploadVideo {
                 destination.didComeFromRecording = true
                 destination.recordedVideo = self.outputURL
+                destination.priorRecordingController = self
             }
         }
     }

@@ -7,21 +7,21 @@
 //
 
 import UIKit
+import Kingfisher
 
 class UserProfile: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-    @IBAction func goBackToOneButtonTapped(_ sender: Any) {
-        performSegue(withIdentifier: "unwindSegueToVC1", sender: self)
-    }
-    @IBAction func unwindToVC1(segue:UIStoryboardSegue) {
-        
-    }
-
+    @IBOutlet weak var userProfileImageView: CircleImage!
+    @IBOutlet weak var userNameTextField: UILabel!
     
+    override func viewDidLoad() {
+        super.viewDidLoad();
+        userProfileImageView.kf.setImage(with: URL(string: User.sharedInstance.profileImageURL))
+        userNameTextField.text = User.sharedInstance.username
+    }
+    
+    @IBAction func backButtonPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
 
 }
