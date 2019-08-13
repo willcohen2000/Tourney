@@ -33,6 +33,7 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     @IBOutlet weak var thirdUserImage: UIImageView!
     @IBOutlet weak var thirdUserName: UILabel!
     @IBOutlet weak var thirdViews: UILabel!
+    @IBOutlet weak var noVideosPostedLabel: UILabel!
     
     var posts = [Post]()
     var post: Post!
@@ -42,6 +43,8 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     var userImage: String!
     var userName: String!
     
+    var activeFilter: String!
+    
     var didCycle: Bool = false
     
     var currentCell: PostCell!
@@ -50,11 +53,13 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     var selectedVideo: Post!
     var queried: [Post] = []
     
+    var likedPosts: [String] = []
+    
     override func viewDidAppear(_ animated: Bool) {
-        //loadDataAndResetTable()
         if let currentCell = currentCell {
             currentCell.isActive();
         }
+        loadDataAndResetTable()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -73,13 +78,11 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
         thirdHolderView.layer.cornerRadius = 10.0;
         thirdHolderView.layer.borderColor = UIColor.black.cgColor;
         thirdHolderView.layer.borderWidth = 1.0;
-        
-
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("HELLLD")
+        noVideosPostedLabel.isHidden = true
         tableView.delegate = self
         tableView.dataSource = self
         imagePicker = UIImagePickerController()
@@ -95,9 +98,7 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     private func sortTopVideos() {
         let ref = Database.database().reference().child("posts")
         var queriedPosts: [Post] = []
-        //change when eventID changes ====================================================
-        let eventID = "pennstate"
-        let query = ref.queryOrdered(byChild: "eventID").queryEqual(toValue: eventID)
+        let query = ref.queryOrdered(byChild: "eventID").queryEqual(toValue: activeFilter)
         query.observeSingleEvent(of: .value, with: { (snapshot) in
             if let childSnapshot = snapshot.children.allObjects as? [DataSnapshot] {
                 queriedPosts.removeAll()
@@ -158,11 +159,12 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     
     func loadDataAndResetTable() {
         if (!didCycle) {
-            Database.database().reference().child("posts").observeSingleEvent(of: .value, with: {
-                (snapshot) in
+            let ref = Database.database().reference().child("posts")
+            let query = ref.queryOrdered(byChild: "eventID").queryEqual(toValue: activeFilter)
+            query.observeSingleEvent(of: .value, with: { (snapshot) in
                 if let snapshot = snapshot.children.allObjects as? [DataSnapshot]{
                     self.posts.removeAll()
-                    for data in snapshot{
+                    for data in snapshot {
                         print(data)
                         if let postDict = data.value as? Dictionary<String, AnyObject> {
                             let key = data.key
@@ -175,35 +177,26 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
                                 let filePath = fileURL.path
                                 let fileManager = FileManager.default
                                 if fileManager.fileExists(atPath: filePath) {
-                                    print("here")
                                     post.downloadedAsset = AVAsset(url: fileURL)
                                     self.posts.append(post)
                                     self.tableView.reloadData()
                                 } else {
-                                    print("there")
                                     let urlData = NSData(contentsOf: URL(string: post.videoLink)!)
                                     urlData!.write(to: fileURL, atomically: true)
                                     post.downloadedAsset = AVAsset(url: fileURL)
                                     self.posts.append(post)
                                     self.tableView.reloadData()
                                 }
-                                //try imageData.write(to: fileURL)
                             } catch {
                                 print(error)
                             }
-                            
-                            //let homeDirectory = NSURL.fileURL(withPath: NSDocumen, isDirectory: true)
-                            
-                            //print("file: \(fileURL)")
-                          //  let filePath = fileURL.path
-                           // let fileManager = FileManager.default
-                            
-                            
                         }
                     }
-                    
                 }
                 self.didCycle = true;
+                if (self.posts.count == 0) {
+                    self.noVideosPostedLabel.isHidden = false
+                }
             })
         }
     }
@@ -220,28 +213,36 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var mostVisiblePercentage: CGFloat = 0.0
-        var mostVisibleCell: PostCell!
-        for item in tableView.indexPathsForVisibleRows! {
-            let cellRect = tableView.rectForRow(at: item)
-            if let superview = tableView.superview {
-                let convertedRect = tableView.convert(cellRect, to:superview)
-                let intersect = tableView.frame.intersection(convertedRect)
-                let visibleHeight = intersect.height
-                let cellHeight = cellRect.height
-                let ratio = visibleHeight / cellHeight
-                if (ratio > mostVisiblePercentage) {
-                    if let priorCell = mostVisibleCell {
-                        priorCell.isUnactive()
+        if (posts.count != 0) {
+            var mostVisiblePercentage: CGFloat = 0.0
+            var mostVisibleCell: PostCell!
+            for item in tableView.indexPathsForVisibleRows! {
+                let cellRect = tableView.rectForRow(at: item)
+                if let superview = tableView.superview {
+                    let convertedRect = tableView.convert(cellRect, to:superview)
+                    let intersect = tableView.frame.intersection(convertedRect)
+                    let visibleHeight = intersect.height
+                    let cellHeight = cellRect.height
+                    let ratio = visibleHeight / cellHeight
+                    if (ratio > mostVisiblePercentage) {
+                        if let priorCell = mostVisibleCell {
+                            priorCell.isUnactive()
+                        }
+                        mostVisiblePercentage = ratio
+                        mostVisibleCell = (tableView.cellForRow(at: item) as! PostCell)
+                    } else {
+                        (tableView.cellForRow(at: item) as! PostCell).isUnactive()
                     }
-                    mostVisiblePercentage = ratio
-                    mostVisibleCell = (tableView.cellForRow(at: item) as! PostCell)
-                } else {
-                    (tableView.cellForRow(at: item) as! PostCell).isUnactive()
                 }
             }
+            mostVisibleCell.isActive()
+            if (!self.likedPosts.contains(mostVisibleCell.post.postKey)) {
+                mostVisibleCell.updateViewsInDatabase(like: true)
+                mostVisibleCell.updateLikesInUI(like: true)
+                self.likedPosts.append(mostVisibleCell.post.postKey)
+            }
         }
-        mostVisibleCell.isActive()
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -334,13 +335,21 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     }
     
     @IBAction func unwindToVC1(segue:UIStoryboardSegue) {
-        
+        self.dismiss(animated: true, completion: nil);
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toTopVideo" {
             if let destination = segue.destination as? TopVideoController {
                 destination.post = self.selectedVideo
+            }
+        } else if segue.identifier == "toUploadVideo" {
+            if let destination = segue.destination as? UploadVideo {
+                
+            }
+        } else if segue.identifier == "recordVideoSegue" {
+            if let destination = segue.destination as? RecordVideo {
+                
             }
         }
     }

@@ -16,6 +16,8 @@ final class User {
     var username: String!
     var profileImageURL: String!
     
+    var activeFilter: String!
+    
 }
 
 

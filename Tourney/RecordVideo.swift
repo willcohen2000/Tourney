@@ -18,15 +18,21 @@ class RecordVideo: UIViewController, AVCaptureFileOutputRecordingDelegate {
     var previewLayer: AVCaptureVideoPreviewLayer!
     var activeInput: AVCaptureDeviceInput!
     var outputURL: URL!
+    
+    var shouldDismiss: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         if setupSession() {
             setupPreview()
             startSession()
         }
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if (shouldDismiss) {
+            self.dismiss(animated: false, completion: nil)
+        }
     }
     
     override func viewDidLayoutSubviews() {

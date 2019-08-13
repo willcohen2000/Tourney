@@ -40,6 +40,8 @@ class UploadVideo: UIViewController, UIImagePickerControllerDelegate, UINavigati
     var timeObserver: AnyObject!
     var shouldUpdateProgressIndicator = true
     
+    var priorRecordingController: RecordVideo!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         randomID = self.randomString(length: 16);
@@ -174,12 +176,12 @@ class UploadVideo: UIViewController, UIImagePickerControllerDelegate, UINavigati
     
     func postToDatabase(videoURL: String) {
         let postReference = Database.database().reference().child("posts").child(randomID)
-        // update the eventID here once it becomes variable
-        let eventID: String = "pennstate";
-        let postData = ["uid": User.sharedInstance.uid, "username": User.sharedInstance.username, "profileImage": User.sharedInstance.profileImageURL, "views": 0, "videoURL": videoURL, "eventID": eventID] as [String : Any];
+        let postData = ["uid": User.sharedInstance.uid, "username": User.sharedInstance.username, "profileImage": User.sharedInstance.profileImageURL, "views": 0, "videoURL": videoURL, "eventID": User.sharedInstance.activeFilter] as [String : Any];
         postReference.updateChildValues(postData) { (error, reference) in
             if (error == nil) {
-                print("successful")
+                if let priorController = self.priorRecordingController {
+                    priorController.shouldDismiss = true
+                }
                 self.dismiss(animated: true, completion: nil);
             } else {
                 print("unsuccessful")

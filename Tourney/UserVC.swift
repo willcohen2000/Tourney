@@ -26,12 +26,11 @@ class UserVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         imagePicker.allowsEditing = true
-
     }
+    
     func keychain(){
         KeychainWrapper.standard.set(userUid, forKey: "uid")
     }
@@ -99,7 +98,6 @@ class UserVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
             } else {
                 print("@willcohen this must have worked ")
                 storageReference.downloadURL { url, error in
-                    print(self.userUid)
                     Database.database().reference().child("users").child(self.userUid).child("profileImageUrl").setValue(url!.absoluteString)
                     completionHandler(true)
                 }
@@ -133,7 +131,7 @@ class UserVC: UIViewController, UIImagePickerControllerDelegate, UINavigationCon
         present(imagePicker, animated: true, completion: nil)
     }
     
-    @IBAction func cancel(_ sender: AnyObject){
+    @IBAction func cancel(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
     }
 

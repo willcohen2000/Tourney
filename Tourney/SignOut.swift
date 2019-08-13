@@ -18,10 +18,11 @@ class SignOut: UIViewController {
 
     }
     @IBAction func SignOut (_sender: AnyObject){
+        print("presssed")
         try! Auth.auth().signOut()
         
         KeychainWrapper.standard.removeObject(forKey: "uid")
-        dismiss(animated: true, completion: nil)
+        self.performSegue(withIdentifier: "signedOut", sender: nil)
         
     }
     @IBAction func goBackToOneButtonTapped(_ sender: Any) {

@@ -81,7 +81,7 @@
                         <outlet property="passwordField" destination="Pg8-ex-k9A" id="raW-oF-pgw"/>
                         <segue destination="tGY-Ki-3g3" kind="show" identifier="SignUp" id="XXc-P6-L6D"/>
                         <segue destination="aa7-GI-cd7" kind="show" identifier="ToFeed" id="wfu-Ls-UB2"/>
-                        <segue destination="hFD-yr-YVI" kind="show" identifier="toFeedSegue" id="Olb-7Q-FW4"/>
+                        <segue destination="PxB-fK-dTO" kind="show" identifier="toFeedSegue" id="KSZ-Fc-GLf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -126,7 +126,7 @@
                                         </constraints>
                                         <state key="normal" title="Back"/>
                                         <connections>
-                                            <segue destination="aa7-GI-cd7" kind="show" id="gys-mF-huY"/>
+                                            <action selector="unwindToVC1WithSegue:" destination="hFD-yr-YVI" eventType="touchUpInside" id="lj7-0K-d7V"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -248,6 +248,12 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No videos posted yet to this location" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="36h-G6-cej">
+                                <rect key="frame" x="0.0" y="211" width="375" height="416"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="35" translatesAutoresizingMaskIntoConstraints="NO" id="XQW-rF-xmN">
                                 <rect key="frame" x="0.0" y="627" width="375" height="40"/>
                                 <subviews>
@@ -258,7 +264,7 @@
                                         </constraints>
                                         <state key="normal" title="Upload a video"/>
                                         <connections>
-                                            <segue destination="Xc6-Lz-pOt" kind="show" id="1Ex-2H-U6N"/>
+                                            <segue destination="Xc6-Lz-pOt" kind="show" identifier="toUploadVideo" id="1Ex-2H-U6N"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jNf-Ls-yiS">
@@ -268,7 +274,7 @@
                                         </constraints>
                                         <state key="normal" title="Take new video"/>
                                         <connections>
-                                            <segue destination="BJr-F5-TZn" kind="show" id="kDI-lv-1kz"/>
+                                            <segue destination="BJr-F5-TZn" kind="show" identifier="recordVideoSegue" id="kDI-lv-1kz"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -473,15 +479,19 @@
                             <constraint firstItem="DUb-HW-oop" firstAttribute="leading" secondItem="tPb-Xw-rs5" secondAttribute="leading" constant="20" id="HBs-LH-O2v"/>
                             <constraint firstItem="tPb-Xw-rs5" firstAttribute="trailing" secondItem="XQW-rF-xmN" secondAttribute="trailing" id="JFG-Vq-fRE"/>
                             <constraint firstItem="85j-sH-D74" firstAttribute="leading" secondItem="tPb-Xw-rs5" secondAttribute="leading" id="Jqj-o0-0mP"/>
+                            <constraint firstItem="36h-G6-cej" firstAttribute="top" secondItem="DUb-HW-oop" secondAttribute="bottom" id="KMb-uj-fvs"/>
                             <constraint firstItem="oYw-II-E1S" firstAttribute="leading" secondItem="tPb-Xw-rs5" secondAttribute="leading" id="Q76-Ow-lEH"/>
                             <constraint firstItem="oYw-II-E1S" firstAttribute="trailing" secondItem="tPb-Xw-rs5" secondAttribute="trailing" id="QjY-ei-Bg6"/>
                             <constraint firstItem="tPb-Xw-rs5" firstAttribute="trailing" secondItem="DUb-HW-oop" secondAttribute="trailing" constant="20" id="Snk-AH-6fS"/>
                             <constraint firstItem="WGz-Nc-a6b" firstAttribute="leading" secondItem="tPb-Xw-rs5" secondAttribute="leading" constant="20" id="Xhf-ov-Gqq"/>
                             <constraint firstItem="XQW-rF-xmN" firstAttribute="top" secondItem="85j-sH-D74" secondAttribute="bottom" id="frr-b3-cPj"/>
                             <constraint firstItem="uAg-eE-Dou" firstAttribute="top" secondItem="WGz-Nc-a6b" secondAttribute="bottom" constant="8" id="hpa-rd-YYK"/>
+                            <constraint firstItem="tPb-Xw-rs5" firstAttribute="trailing" secondItem="36h-G6-cej" secondAttribute="trailing" id="izf-h3-JO3"/>
+                            <constraint firstItem="36h-G6-cej" firstAttribute="leading" secondItem="tPb-Xw-rs5" secondAttribute="leading" id="prS-2Q-78S"/>
                             <constraint firstItem="tPb-Xw-rs5" firstAttribute="trailing" secondItem="uAg-eE-Dou" secondAttribute="trailing" constant="20" id="qCa-e1-Kb6"/>
                             <constraint firstItem="oYw-II-E1S" firstAttribute="top" secondItem="tPb-Xw-rs5" secondAttribute="top" id="rIp-UA-TGC"/>
                             <constraint firstItem="85j-sH-D74" firstAttribute="top" secondItem="DUb-HW-oop" secondAttribute="bottom" id="wYG-yQ-nUt"/>
+                            <constraint firstItem="XQW-rF-xmN" firstAttribute="top" secondItem="36h-G6-cej" secondAttribute="bottom" id="xhk-Vn-IMd"/>
                             <constraint firstItem="85j-sH-D74" firstAttribute="trailing" secondItem="tPb-Xw-rs5" secondAttribute="trailing" id="xl9-ay-kQD"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="tPb-Xw-rs5"/>
@@ -491,6 +501,7 @@
                         <outlet property="firstUserImage" destination="j0y-Oe-6cP" id="Y5C-LW-TLL"/>
                         <outlet property="firstUserName" destination="22Y-rw-FkX" id="doQ-zM-eDF"/>
                         <outlet property="firstViews" destination="SIB-sv-7vc" id="inV-6m-nwQ"/>
+                        <outlet property="noVideosPostedLabel" destination="36h-G6-cej" id="Zkr-c4-d5h"/>
                         <outlet property="secondHolderView" destination="uAg-eE-Dou" id="n1x-E7-VS7"/>
                         <outlet property="secondUserImage" destination="QmE-lg-iEk" id="S7S-Xu-015"/>
                         <outlet property="secondUserName" destination="uQM-Bq-Xlq" id="r0Z-iS-7zg"/>
@@ -500,8 +511,6 @@
                         <outlet property="thirdUserImage" destination="NBQ-tQ-NGg" id="yi9-1J-YWJ"/>
                         <outlet property="thirdUserName" destination="Knc-T6-Xjn" id="h9Z-yy-zKf"/>
                         <outlet property="thirdViews" destination="Fss-Sv-LpP" id="v6e-Yb-wVO"/>
-                        <segue destination="BJr-F5-TZn" kind="show" id="Rxx-Hz-v71"/>
-                        <segue destination="BJr-F5-TZn" kind="show" id="gVb-Eg-D6N"/>
                         <segue destination="gSG-Sq-wle" kind="show" identifier="toTopVideo" id="0ew-Ft-8bm"/>
                     </connections>
                 </viewController>
@@ -671,7 +680,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dC6-dw-vUP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3128.8000000000002" y="112.89355322338831"/>
+            <point key="canvasLocation" x="3545" y="113"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="pW3-cj-McK">
@@ -769,10 +778,13 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="cOK-O9-qEo"/>
+                    <connections>
+                        <segue destination="hFD-yr-YVI" kind="show" identifier="toVideoFeed" id="po6-sB-hgm"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KQj-4h-oip" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1101.5999999999999" y="860.41979010494754"/>
+            <point key="canvasLocation" x="1102" y="987"/>
         </scene>
         <!--UserVC-->
         <scene sceneID="SCx-ZS-i8w">
@@ -857,7 +869,7 @@
                         <outlet property="completeSignInBtn" destination="d5k-V7-qjv" id="Vt3-18-xuR"/>
                         <outlet property="userImagePicker" destination="yGv-JJ-chZ" id="oPm-Ak-3au"/>
                         <outlet property="usernameField" destination="aDM-jB-naQ" id="lmA-Je-Atq"/>
-                        <segue destination="hFD-yr-YVI" kind="show" identifier="toFeedSegue" id="P4Z-rs-PpG"/>
+                        <segue destination="PxB-fK-dTO" kind="show" identifier="toFeedSegue" id="cIv-nT-Xdz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aAR-dB-Cve" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1035,6 +1047,7 @@
                                 </state>
                                 <connections>
                                     <action selector="SignOutWith_sender:" destination="xTv-Gt-4M6" eventType="touchUpInside" id="liZ-mW-Ucv"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="signedOut" id="1hy-zS-lLm"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1063,9 +1076,8 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Tad-LV-3QN"/>
-        <segue reference="EpW-Me-C44"/>
-        <segue reference="Rxx-Hz-v71"/>
+        <segue reference="cIv-nT-Xdz"/>
+        <segue reference="wfu-Ls-UB2"/>
         <segue reference="1Ex-2H-U6N"/>
-        <segue reference="P4Z-rs-PpG"/>
     </inferredMetricsTieBreakers>
 </document>
