@@ -11,6 +11,7 @@ import Foundation
 import FirebaseAnalytics
 import FirebaseDatabase
 import AVKit
+import UIKit
 
 class Post  {
     
@@ -21,14 +22,15 @@ class Post  {
     private var _postKey: String!
     private var _videoLink: String!
     private var _postRef: DatabaseReference!
+    var thumbnail: UIImage!
     
-    private var _downloadedAsset: AVAsset!
+    private var _downloadedURL: URL!
 
-    var downloadedAsset: AVAsset {
+    var downloadedURL: URL {
         get {
-            return _downloadedAsset
+            return _downloadedURL
         } set{
-            _downloadedAsset = newValue
+            _downloadedURL = newValue
         }
     }
     var username: String {

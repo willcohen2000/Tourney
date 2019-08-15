@@ -20,6 +20,7 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var username: UILabel!
     @IBOutlet weak var postVideo: UIView!
     @IBOutlet weak var likesLbl: UILabel!
+    @IBOutlet weak var thumbnailImageView: UIImageView!
     
     var post: Post!
     var userPostKey: DatabaseReference!
@@ -27,58 +28,74 @@ class PostCell: UITableViewCell {
     
     var viewed: Bool = false;
     
-    var player : AVPlayer!
-    var avPlayerLayer : AVPlayerLayer!
-
+    private lazy var player: AVPlayer = AVPlayer(playerItem: nil)
+    
+    private lazy var playerLayer: AVPlayerLayer = {
+        let playerLayer = AVPlayerLayer(player: self.player)
+        playerLayer.videoGravity = .resizeAspectFill
+        return playerLayer
+    }()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.postVideo.backgroundColor = UIColor.clear
+        self.postVideo.isHidden = true
+        self.postVideo.layer.addSublayer(self.playerLayer)
+        player.addObserver(self, forKeyPath: "rate", options: NSKeyValueObservingOptions.new, context: nil)
+        thumbnailImageView.backgroundColor = UIColor.gray
         userImg.layer.cornerRadius = userImg.frame.height / 2
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.avPlayerLayer.frame = self.postVideo.layer.bounds
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        playerLayer.frame = postVideo.layer.bounds
     }
     
-    func isUnactive() {
-        if let player = player {
-            player.pause();
-        }
-        
+    func stopvid() {
+        postVideo.isHidden = true
+        updateThumbnail()
+        player.replaceCurrentItem(with: nil)
+        thumbnailImageView.isHidden = false
     }
     
-    func isActive() {
-        if let player = player {
-            player.play();
-        }
+    func playvid(url: String) {
         
+        let playerItem = AVPlayerItem(url: URL(string: post.videoLink)!)
+        player.replaceCurrentItem(with: playerItem)
+        player.automaticallyWaitsToMinimizeStalling = true
+        self.player.play()
+        
+        // NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: .main) { [weak self] _ in
+        //     self?.player.seek(to: CMTime.zero)
+        //     self?.player.play()
+        //}
     }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "rate" {
+            if player.rate > 0 {
+                print("here we set it")
+                self.postVideo.isHidden = false
+            }
+        }
+    }
+    
+    func updateThumbnail() {
+        if let thumbnail = post.thumbnail {
+            thumbnailImageView.image = thumbnail
+        } else {
+            thumbnailImageView.backgroundColor = UIColor.gray
+        }
+    }
+    
     
     func configCell(post: Post, img: UIImage? = nil, userImg: UIImage? = nil) {
         
-        self.player = AVPlayer(playerItem: AVPlayerItem(asset: post.downloadedAsset))
-        self.avPlayerLayer = AVPlayerLayer(player: self.player)
-        self.avPlayerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        self.player.automaticallyWaitsToMinimizeStalling = false
-        self.postVideo.layer.addSublayer(self.avPlayerLayer)
-        self.player.play()
-
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: .main) { [weak self] _ in
-            self?.player?.seek(to: CMTime.zero)
-            self?.player?.play()
-        }
-        
-        postVideo.backgroundColor = UIColor.black
+        postVideo.backgroundColor = UIColor.clear
         self.post = post
         self.likesLbl.text = "\(post.views)"
         self.username.text = post.username
-   
+        
         self.userImg.kf.setImage(with: URL(string: post.userImg))
         
     }
@@ -116,21 +133,6 @@ class PostCell: UITableViewCell {
         
     }
     
-    
-   /* @IBAction func liked(_ sender: AnyObject ){
-        let likeRef = Database.database().reference().child("likes").child(currentUser!).child(post.postKey)
-        
-        likeRef.observeSingleEvent(of: .value, with: {(snapshot) in
-            if let _ = snapshot.value as? NSNull {
-                self.updateLikesInUI(like: true)
-                self.updateViewsInDatabase(like: true)
-                likeRef.child(self.post.postKey).setValue(true)
-            } else {
-                self.updateLikesInUI(like: false)
-                self.updateViewsInDatabase(like: false)
-                likeRef.child(self.post.postKey).removeValue()
-            }
-        })
-    }*/
 
+    
 }

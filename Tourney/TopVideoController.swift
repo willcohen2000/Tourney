@@ -17,6 +17,8 @@ class TopVideoController: UIViewController {
     
     var player : AVPlayer!
     var avPlayerLayer : AVPlayerLayer!
+    
+    var timer = Timer()
         
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -28,8 +30,19 @@ class TopVideoController: UIViewController {
        
     }
     
+    func scheduledTimerWithTimeInterval(){
+        // Scheduling timer to Call the function "updateCounting" with the interval of 1 seconds
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: Selector(("updateCounting")), userInfo: nil, repeats: true)
+    }
+    
+    @objc func updateCounting(){
+        print("sdf")
+        player.play()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad();
+        
         print("what hapepned dude: \(post.videoLink)")
        /* let playerItem = CachingPlayerItem(url: URL(string: post.videoLink)!)
         player = AVPlayer(playerItem: playerItem)
@@ -44,7 +57,7 @@ class TopVideoController: UIViewController {
         }*/
         
         let videoURL = URL(string: post.videoLink)
-        let player = AVPlayer(url: videoURL!)
+        player = AVPlayer(url: videoURL!)
         avPlayerLayer = AVPlayerLayer(player: player)
         avPlayerLayer.frame = self.previewVideoView.layer.bounds
         avPlayerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill;
@@ -52,6 +65,7 @@ class TopVideoController: UIViewController {
         self.previewVideoView.layer.addSublayer(avPlayerLayer)
         player.play()
         
+        scheduledTimerWithTimeInterval()
     }
     
     @IBAction func backButtonPressed(_ sender: Any) {

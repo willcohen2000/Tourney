@@ -45,10 +45,10 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     
     var activeFilter: String!
     
-    var didCycle: Bool = false
-    
-    var currentCell: PostCell!
+    var currentCellPlaying: PostCell!
     var cells: [PostCell] = [];
+    var cellPostkeys: [String] = []
+    var firstRun: Bool = true
     
     var selectedVideo: Post!
     var queried: [Post] = []
@@ -56,16 +56,18 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     var likedPosts: [String] = []
     
     override func viewDidAppear(_ animated: Bool) {
-        if let currentCell = currentCell {
+        /*if let currentCell = currentCell {
             currentCell.isActive();
         }
         loadDataAndResetTable()
+         */
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        if let currentCell = currentCell {
-             currentCell.isUnactive()
+        /*if let currentCell = currentCell {
+            currentCell.isUnactive()
         }
+         */
     }
     
     private func configureViews() {
@@ -110,7 +112,7 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
                     }
                 }
             }
-
+            
             queriedPosts = queriedPosts.sorted(by: { $0.views > $1.views })
             self.queried = queriedPosts
             if (queriedPosts.count == 1) {
@@ -158,51 +160,56 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     }
     
     func loadDataAndResetTable() {
-        if (!didCycle) {
-            let ref = Database.database().reference().child("posts")
-            let query = ref.queryOrdered(byChild: "eventID").queryEqual(toValue: activeFilter)
-            query.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let snapshot = snapshot.children.allObjects as? [DataSnapshot]{
-                    self.posts.removeAll()
-                    for data in snapshot {
-                        print(data)
-                        if let postDict = data.value as? Dictionary<String, AnyObject> {
-                            let key = data.key
-                            let post = Post(postKey: key, postData: postDict)
-                            
-                            let fileManager = FileManager.default
-                            do {
-                                let documentDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
-                                let fileURL = documentDirectory.appendingPathComponent("\(key).mov")
-                                let filePath = fileURL.path
-                                let fileManager = FileManager.default
-                                if fileManager.fileExists(atPath: filePath) {
-                                    post.downloadedAsset = AVAsset(url: fileURL)
-                                    self.posts.append(post)
-                                    self.tableView.reloadData()
-                                } else {
-                                    let urlData = NSData(contentsOf: URL(string: post.videoLink)!)
-                                    urlData!.write(to: fileURL, atomically: true)
-                                    post.downloadedAsset = AVAsset(url: fileURL)
-                                    self.posts.append(post)
-                                    self.tableView.reloadData()
-                                }
-                            } catch {
-                                print(error)
+        let ref = Database.database().reference().child("posts")
+        let query = ref.queryOrdered(byChild: "eventID").queryEqual(toValue: activeFilter)
+        query.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let snapshot = snapshot.children.allObjects as? [DataSnapshot]{
+                self.posts.removeAll()
+                for data in snapshot {
+                    if let postDict = data.value as? Dictionary<String, AnyObject> {
+                        let key = data.key
+                        let post = Post(postKey: key, postData: postDict)
+                        self.posts.append(post)
+                        let postIndex = self.posts.firstIndex{$0 === post}
+                        self.getThumbnailImageFromVideoUrl(post: post) { (image) in
+                            post.thumbnail = image
+                            if (self.cells.count > postIndex!) {
+                                let cell = self.cells[postIndex!]
+                                cell.updateThumbnail()
                             }
                         }
                     }
                 }
-                self.didCycle = true;
-                if (self.posts.count == 0) {
-                    self.noVideosPostedLabel.isHidden = false
+            }
+            self.tableView.reloadData()
+            if (self.posts.count == 0) {
+                self.noVideosPostedLabel.isHidden = false
+            }
+        })
+    }
+    
+    func getThumbnailImageFromVideoUrl(post: Post, completion: @escaping ((_ image: UIImage?)->Void)) {
+        DispatchQueue.global().async {
+            let asset = AVAsset(url: URL(string: post.videoLink)!)
+            let avAssetImageGenerator = AVAssetImageGenerator(asset: asset)
+            avAssetImageGenerator.appliesPreferredTrackTransform = true
+            let thumnailTime = CMTimeMake(value: 1, timescale: 1)
+            do {
+                let cgThumbImage = try avAssetImageGenerator.copyCGImage(at: thumnailTime, actualTime: nil)
+                let thumbImage = UIImage(cgImage: cgThumbImage)
+                DispatchQueue.main.async {
+                    completion(thumbImage)
                 }
-            })
+            } catch {
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 400
+        return (tableView.frame.height * 0.90)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -213,56 +220,71 @@ class FeedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIIm
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if (posts.count != 0) {
-            var mostVisiblePercentage: CGFloat = 0.0
-            var mostVisibleCell: PostCell!
-            for item in tableView.indexPathsForVisibleRows! {
-                let cellRect = tableView.rectForRow(at: item)
-                if let superview = tableView.superview {
-                    let convertedRect = tableView.convert(cellRect, to:superview)
-                    let intersect = tableView.frame.intersection(convertedRect)
-                    let visibleHeight = intersect.height
-                    let cellHeight = cellRect.height
-                    let ratio = visibleHeight / cellHeight
-                    if (ratio > mostVisiblePercentage) {
-                        if let priorCell = mostVisibleCell {
-                            priorCell.isUnactive()
-                        }
-                        mostVisiblePercentage = ratio
-                        mostVisibleCell = (tableView.cellForRow(at: item) as! PostCell)
-                    } else {
-                        (tableView.cellForRow(at: item) as! PostCell).isUnactive()
-                    }
+        
+        var mostVisiblePercentage: CGFloat = 0.0
+        var newMostVisibleCandidate: PostCell!
+        for item in tableView.indexPathsForVisibleRows! {
+            let cellRect = tableView.rectForRow(at: item)
+            if let superview = tableView.superview {
+                let convertedRect = tableView.convert(cellRect, to:superview)
+                let intersect = tableView.frame.intersection(convertedRect)
+                let visibleHeight = intersect.height
+                let cellHeight = cellRect.height
+                let ratio = visibleHeight / cellHeight
+                
+                if (ratio > mostVisiblePercentage) {
+                    newMostVisibleCandidate = (tableView.cellForRow(at: item) as! PostCell)
+                    mostVisiblePercentage = ratio
                 }
+                
             }
-            mostVisibleCell.isActive()
-            if (!self.likedPosts.contains(mostVisibleCell.post.postKey)) {
-                mostVisibleCell.updateViewsInDatabase(like: true)
-                mostVisibleCell.updateLikesInUI(like: true)
-                self.likedPosts.append(mostVisibleCell.post.postKey)
-            }
+        }
+        
+        if (newMostVisibleCandidate != currentCellPlaying) {
+            currentCellPlaying.stopvid()
+            newMostVisibleCandidate.playvid(url: newMostVisibleCandidate.post.videoLink)
+            currentCellPlaying = newMostVisibleCandidate
         }
         
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let post = posts[indexPath.row]
         if let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell") as? PostCell {
             cell.configCell(post: post)
-            if (!cells.contains(cell)) {
-                cells.append(cell)
-            }
-            if (indexPath.row == 0) {
-                cell.isActive()
+            if (cellPostkeys.contains(post.postKey)) {
+                let index = cellPostkeys.firstIndex(of: post.postKey)
+                cells[index!] = cell
             } else {
-                cell.isUnactive()
+                cells.append(cell)
+                cellPostkeys.append(post.postKey)
             }
+            if (firstRun && (indexPath.row == 0)) {
+                cell.playvid(url: post.videoLink)
+                currentCellPlaying = cell
+                firstRun = false
+            }
+            cell.updateThumbnail()
             return cell
         } else {
             return PostCell()
         }
+        
+        /*
+         cell.configCell(post: post)
+         if (!cells.contains(cell)) {
+         cells.append(cell)
+         }
+         if (indexPath.row == 0) {
+         cell.isActive()
+         } else {
+         cell.isUnactive()
+         }
+         return cell
+         */
     }
+    
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage{
             selectedImage = image
@@ -376,18 +398,3 @@ extension Collection where Indices.Iterator.Element == Index {
         return indices.contains(index) ? self[index] : nil
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

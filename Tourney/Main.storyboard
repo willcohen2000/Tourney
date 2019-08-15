@@ -161,6 +161,9 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pSv-iT-4od" customClass="RoundedView" customModule="Tourney" customModuleProvider="target">
                                                     <rect key="frame" x="15" y="0.0" width="345" height="344"/>
                                                     <subviews>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8DX-LY-Bm0">
+                                                            <rect key="frame" x="10" y="10" width="325" height="294"/>
+                                                        </imageView>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GZc-fX-mxX">
                                                             <rect key="frame" x="10" y="10" width="325" height="294"/>
                                                             <color key="backgroundColor" red="0.33333333329999998" green="0.4039215686" blue="0.73725490199999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -221,13 +224,17 @@
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
+                                                        <constraint firstItem="2cO-Lr-Kk0" firstAttribute="top" secondItem="8DX-LY-Bm0" secondAttribute="bottom" id="6la-bH-3am"/>
                                                         <constraint firstAttribute="trailing" secondItem="2cO-Lr-Kk0" secondAttribute="trailing" constant="10" id="AqH-y8-9JR"/>
                                                         <constraint firstAttribute="bottom" secondItem="2cO-Lr-Kk0" secondAttribute="bottom" id="Iin-ok-K6u"/>
+                                                        <constraint firstItem="8DX-LY-Bm0" firstAttribute="leading" secondItem="pSv-iT-4od" secondAttribute="leading" constant="10" id="LF2-8d-xZZ"/>
                                                         <constraint firstAttribute="width" constant="345" id="Oy9-um-tXP"/>
+                                                        <constraint firstItem="8DX-LY-Bm0" firstAttribute="top" secondItem="pSv-iT-4od" secondAttribute="top" constant="10" id="PkZ-2v-a4K"/>
                                                         <constraint firstItem="2cO-Lr-Kk0" firstAttribute="top" secondItem="GZc-fX-mxX" secondAttribute="bottom" id="Q77-eG-tqq"/>
                                                         <constraint firstItem="2cO-Lr-Kk0" firstAttribute="leading" secondItem="pSv-iT-4od" secondAttribute="leading" constant="10" id="RJ2-pf-Cva"/>
                                                         <constraint firstAttribute="trailing" secondItem="GZc-fX-mxX" secondAttribute="trailing" constant="10" id="SNy-sr-Pqb"/>
                                                         <constraint firstItem="GZc-fX-mxX" firstAttribute="leading" secondItem="pSv-iT-4od" secondAttribute="leading" constant="10" id="TB0-c8-0Xc"/>
+                                                        <constraint firstAttribute="trailing" secondItem="8DX-LY-Bm0" secondAttribute="trailing" constant="10" id="Uk3-si-hdW"/>
                                                         <constraint firstItem="GZc-fX-mxX" firstAttribute="top" secondItem="pSv-iT-4od" secondAttribute="top" constant="10" id="afD-fD-n6Q"/>
                                                     </constraints>
                                                 </view>
@@ -241,6 +248,7 @@
                                         <connections>
                                             <outlet property="likesLbl" destination="Jjb-iu-Bk4" id="Ohv-IT-yuT"/>
                                             <outlet property="postVideo" destination="GZc-fX-mxX" id="LmV-0a-YRT"/>
+                                            <outlet property="thumbnailImageView" destination="8DX-LY-Bm0" id="0uX-b1-j2H"/>
                                             <outlet property="userImg" destination="eAq-Xu-eDk" id="M5Z-52-DqV"/>
                                             <outlet property="username" destination="HYz-yl-EQu" id="Cmg-NY-BPf"/>
                                             <segue destination="aa7-GI-cd7" kind="show" animates="NO" id="EpW-Me-C44"/>
@@ -1079,9 +1087,9 @@
         <image name="baseline_settings_black_48pt_3x" width="144" height="144"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="HrG-86-VWO"/>
+        <segue reference="Tad-LV-3QN"/>
         <segue reference="cIv-nT-Xdz"/>
-        <segue reference="wfu-Ls-UB2"/>
+        <segue reference="EpW-Me-C44"/>
         <segue reference="1Ex-2H-U6N"/>
     </inferredMetricsTieBreakers>
 </document>
